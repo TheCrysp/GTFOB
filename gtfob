@@ -13,11 +13,11 @@ print("\033[92mcoded by\033[0m \33[31m @thecrysp\033[0m")
 print('-'*100)
 
 requests_cache.install_cache(
-    'cache', backend='sqlite', expire_after=180)
+    '~/cache', backend='sqlite', expire_after=2592000)
 
 def getBins(binaries):
     for i in binaries:
-        print(i + ',', end=" ")
+        print(i + ','+'\t', end=" ")
 
 
 def getDetails(bin):
